@@ -1,0 +1,28 @@
+/vendor/
+
+# IntelliJ project files
+.idea
+*.iml
+
+# Vagrant template
+.vagrant
+
+# OSX template
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
