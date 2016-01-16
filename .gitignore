@@ -1,4 +1,5 @@
 /vendor/
+phpunit.xml
 
 # IntelliJ project files
 .idea
