@@ -39,5 +39,4 @@ final class AppFactory
             ->registerControllers()
             ->registerRoutes();
     }
-
 }
