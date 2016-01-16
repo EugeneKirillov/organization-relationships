@@ -1,5 +1,7 @@
 <?php
 namespace Owr\App\Controller\Api;
+
+use Owr\App\Controller\PaginationTrait;
 use Owr\Service\OrganizationsService;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -11,6 +13,8 @@ use Slim\Http\Response;
  */
 class OrganizationsController
 {
+    use PaginationTrait;
+
     /**
      * @var OrganizationsService
      */
@@ -35,6 +39,10 @@ class OrganizationsController
      */
     public function getRelationsAction(Request $request, Response $response, $args)
     {
-        return $response->withJson($this->organizations->getRelations($args['name']));
+        $name  = $args['name'];
+        $page  = $this->getPage($request->getParam('page', 1));
+        $count = $this->getCountPerPage($request->getParam('count', 10));
+
+        return $response->withJson($this->organizations->getRelations($name, $page, $count));
     }
 }

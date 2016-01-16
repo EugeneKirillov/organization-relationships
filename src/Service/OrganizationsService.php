@@ -12,12 +12,14 @@ class OrganizationsService
      * Returns list relations by organization's name
      *
      * @param string $name
+     * @param int $page
+     * @param int $count
      *
      * @return array
      */
-    public function getRelations($name)
+    public function getRelations($name, $page = 1, $count = 10)
     {
-        return [
+        return array_slice([
             [
                 "relationship_type"=> "self",
                 "org_name" => $name,
@@ -46,6 +48,6 @@ class OrganizationsService
                 "relationship_type" => "sister",
                 "org_name" => "Yellow Banana",
             ],
-        ];
+        ], ($page - 1) * $count, $count);
     }
 }
