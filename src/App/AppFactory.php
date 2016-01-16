@@ -11,7 +11,7 @@ final class AppFactory
     /**
      * Create Application's instance
      *
-     * @param $config
+     * @param array $config
      * @param bool $debug
      *
      * @return App
@@ -27,7 +27,7 @@ final class AppFactory
     /**
      * Create Application's instance
      *
-     * @param $config
+     * @param array $config
      * @param bool $debug
      *
      * @return App
