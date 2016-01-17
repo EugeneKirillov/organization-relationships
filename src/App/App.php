@@ -6,7 +6,7 @@ use Owr\App\Provider\OrganizationsServiceProvider;
 use Slim\App as Application;
 
 /**
- * Class App
+ * Application class
  *
  * @package Owr\App
  */
@@ -64,7 +64,9 @@ class App extends Application
 
             // TODO: add endpoint to add new relations
 
-            // TODO: add endpoint to delete all relations
+            // endpoint to delete all relations
+            $this->delete('/organizations/relations', 'api_relations_controller:deleteRelationsAction');
+
         });
 
         // group web routes here (if needed)

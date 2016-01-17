@@ -45,4 +45,12 @@ class OrganizationsTest extends WebTestCase
         ], ($params['page'] - 1) * $params['count'], $params['count']);
         $this->assertJsonResponse($expected, 200);
     }
+
+    public function testDeleteRelations()
+    {
+        $this->client->request('DELETE', '/api/v1/organizations/relations');
+
+        $this->assertStatusCode(204);
+        $this->assertEquals("null", $this->client->getResponse());
+    }
 }

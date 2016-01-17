@@ -45,4 +45,18 @@ class OrganizationsController
 
         return $response->withJson($this->organizations->getRelations($name, $page, $count));
     }
+
+    /**
+     * Delete organizations relations action
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     *
+     * @return Response
+     */
+    public function deleteRelationsAction(Request $request, Response $response, $args)
+    {
+        return $response->withJson(null, 204);
+    }
 }

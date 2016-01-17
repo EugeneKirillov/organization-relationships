@@ -19,7 +19,7 @@ class WebTestCase extends \PHPUnit_Framework_TestCase
     protected $app;
 
     /**
-     *
+     * Test client instance
      *
      * @var WebTestClient
      */
