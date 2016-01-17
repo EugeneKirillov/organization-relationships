@@ -8,7 +8,7 @@ class PaginationTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetPage($raw, $expected)
     {
-        $pagination = $this->getPagination();
+        $pagination = $this->getPaginationObject();
         $this->assertEquals($expected, $pagination->getPage($raw));
     }
 
@@ -17,14 +17,14 @@ class PaginationTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCountPerPage($raw, $expected)
     {
-        $pagination = $this->getPagination();
+        $pagination = $this->getPaginationObject();
         $this->assertEquals($expected, $pagination->getCountPerPage($raw));
     }
 
     /**
      * @return \Owr\App\Controller\PaginationTrait
      */
-    private function getPagination()
+    private function getPaginationObject()
     {
         return $this->getObjectForTrait(\Owr\App\Controller\PaginationTrait::class);
     }
