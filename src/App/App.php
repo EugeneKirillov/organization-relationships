@@ -62,7 +62,8 @@ class App extends Application
             // endpoint for fetching relations by organization's name
             $this->get('/organizations/relations/{name}', 'api_relations_controller:getRelationsAction');
 
-            // TODO: add endpoint to add new relations
+            // endpoint to save organizations relations
+            $this->post('/organizations/relations', 'api_relations_controller:createRelationsAction');
 
             // endpoint to delete all relations
             $this->delete('/organizations/relations', 'api_relations_controller:deleteRelationsAction');

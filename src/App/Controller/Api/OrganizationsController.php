@@ -47,6 +47,25 @@ class OrganizationsController
     }
 
     /**
+     * Save organizations relations action
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     *
+     * @return Response
+     */
+    public function createRelationsAction(Request $request, Response $response, $args)
+    {
+        // TODO: add validation for content type
+        // TODO: add validation for data structure
+        $relations = $request->getParsedBody();
+        $relations = $this->organizations->createRelations($relations);
+
+        return $response->withJson($relations, 201);
+    }
+
+    /**
      * Delete organizations relations action
      *
      * @param Request $request
