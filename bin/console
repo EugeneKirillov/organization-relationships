@@ -1,0 +1,67 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Migrations\Configuration\Configuration;
+use Doctrine\DBAL\Migrations\OutputWriter;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\AbstractCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\LatestCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+$config = require __DIR__ . '/../config.php';
+$config['migrations'] = [
+    'directory'  => __DIR__ . '/../migrations',
+    'name'       => 'OWR Migrations',
+    'namespace'  => 'Owr\Migration',
+    'table_name' => 'migrations',
+];
+
+$connection = DriverManager::getConnection($config['db']);
+
+$helperSet = new HelperSet([
+    'connection' => new ConnectionHelper($connection),
+    'dialog'     => new QuestionHelper(),
+]);
+
+$outputWriter = new OutputWriter(function ($message) {
+    $output = new ConsoleOutput();
+    $output->writeln($message);
+});
+
+$configuration = new Configuration($connection, $outputWriter);
+$configuration->setMigrationsDirectory($config['migrations']['directory']);
+$configuration->setName($config['migrations']['name']);
+$configuration->setMigrationsNamespace($config['migrations']['namespace']);
+$configuration->setMigrationsTableName($config['migrations']['table_name']);
+$configuration->registerMigrationsFromDirectory($config['migrations']['directory']);
+
+$commands = [
+    new ExecuteCommand(),
+    new GenerateCommand(),
+    new LatestCommand(),
+    new MigrateCommand(),
+    new StatusCommand(),
+    new VersionCommand()
+];
+
+/** @var AbstractCommand $command */
+foreach ($commands as $command) {
+    $command->setMigrationConfiguration($configuration);
+}
+
+$console = new Application('OWR Console', '0.1');
+$console->setCatchExceptions(true);
+$console->setHelperSet($helperSet);
+$console->addCommands($commands);
+$console->run();
+
