@@ -20,13 +20,21 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 $config = require __DIR__ . '/../config.php';
 $config['migrations'] = [
-    'directory'  => __DIR__ . '/../migrations',
-    'name'       => 'OWR Migrations',
-    'namespace'  => 'Owr\Migration',
-    'table_name' => 'migrations',
+    'directory'     => __DIR__ . '/../migrations',
+    'name'          => 'OWR Migrations',
+    'namespace'     => 'Owr\Migration',
+    'table_name'    => 'migrations',
+    'mapping_types' => [
+        'enum' => 'string'
+    ],
 ];
 
 $connection = DriverManager::getConnection($config['db']);
+
+// enable types that doesn't supported by doctrine's platforms out of the box
+foreach ($config['migrations']['mapping_types'] as $sql => $doctrine) {
+    $connection->getDatabasePlatform()->registerDoctrineTypeMapping($sql, $doctrine);
+}
 
 $helperSet = new HelperSet([
     'connection' => new ConnectionHelper($connection),
