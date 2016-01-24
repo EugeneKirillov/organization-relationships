@@ -1,5 +1,4 @@
 <?php
-
 namespace Owr\Migration;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
@@ -17,7 +16,7 @@ class Version20160118095240 extends AbstractMigration
     {
         $organizations = <<<SQL
 CREATE TABLE `organizations` (
-  `id` INTEGER UNSIGNED,
+  `id` INTEGER UNSIGNED AUTO_INCREMENT,
   `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY (`name`)
