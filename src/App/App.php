@@ -36,6 +36,9 @@ class App extends Application
     {
         $container = $this->getContainer();
         $container
+            ->register(new DbalServiceProvider(), [
+                'db.options' => $container['settings']['db']
+            ])
             ->register(new OrganizationsServiceProvider())
         ;
 
