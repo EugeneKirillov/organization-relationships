@@ -19,7 +19,8 @@ class Version20160118095240 extends AbstractMigration
 CREATE TABLE `organizations` (
   `id` INTEGER UNSIGNED,
   `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`name`)
 ) ENGINE = InnoDB
 SQL;
         $relations = <<<SQL
