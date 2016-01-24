@@ -2,7 +2,11 @@
 namespace Owr\App;
 
 use Owr\App\Controller\Api\OrganizationsController;
+use Owr\App\Provider\DbalServiceProvider;
 use Owr\App\Provider\OrganizationsServiceProvider;
+use Owr\App\Provider\SerializerServiceProvider;
+use Owr\Entity\Organization\Factory;
+use Owr\Entity\Strategy\Md5HashGeneratorStrategy;
 use Slim\App as Application;
 
 /**
@@ -24,14 +28,28 @@ class App extends Application
     }
 
     /**
+     * Register service providers
+     *
+     * @return $this
+     */
+    public function registerServiceProviders()
+    {
+        $container = $this->getContainer();
+        $container
+            ->register(new OrganizationsServiceProvider())
+        ;
+
+        return $this;
+    }
+
+    /**
      * Register application services
      *
      * @return $this
      */
     public function registerServices()
     {
-        $this->getContainer()->register(new OrganizationsServiceProvider());
-
+        // TODO: register services that doesn't require initialization
         return $this;
     }
 
