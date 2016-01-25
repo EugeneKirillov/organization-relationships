@@ -14,16 +14,18 @@ trait RelationAwareTrait
     private $relations = [];
 
     /**
-     * Set whole list of relations
+     * Checks if relation between $source and $target nodes already exists
      *
-     * @param EdgeInterface[] $relations
+     * @param NodeInterface $source
+     * @param NodeInterface $target
      *
-     * @return $this
+     * @return bool
      */
-    public function setRelations(array $relations)
+    public function hasRelation(NodeInterface $source, NodeInterface $target)
     {
-        $this->relations = $relations;
-        return $this;
+        return (bool) count(array_filter($this->relations, function (EdgeInterface $edge) use ($source, $target) {
+            return $edge->getSource() == $source && $edge->getTarget() == $target;
+        }));
     }
 
     /**
@@ -54,7 +56,7 @@ trait RelationAwareTrait
      *
      * @return NodeInterface
      */
-    public function getRoot()
+    public function getRootNode()
     {
         // NB: This method expects the only cas when edge(s)
         // for root node added at first. If we can't garantee,
@@ -75,7 +77,7 @@ trait RelationAwareTrait
      */
     public function getParents(NodeInterface $node)
     {
-        return $this->filter($node, EdgeInterface::RELATION_TYPE_PARENT);
+        return $this->getTargetNodes($node, EdgeInterface::RELATION_TYPE_PARENT);
     }
 
     /**
@@ -87,7 +89,7 @@ trait RelationAwareTrait
      */
     public function getSiblings(NodeInterface $node)
     {
-        return $this->filter($node, EdgeInterface::RELATION_TYPE_SIBLING);
+        return $this->getTargetNodes($node, EdgeInterface::RELATION_TYPE_SIBLING);
     }
 
     /**
@@ -99,7 +101,7 @@ trait RelationAwareTrait
      */
     public function getChilds(NodeInterface $node)
     {
-        return $this->filter($node, EdgeInterface::RELATION_TYPE_CHILD);
+        return $this->getTargetNodes($node, EdgeInterface::RELATION_TYPE_CHILD);
     }
 
     /**
@@ -112,7 +114,7 @@ trait RelationAwareTrait
      *
      * @return NodeInterface[]
      */
-    private function filter(NodeInterface $node, $type)
+    private function getTargetNodes(NodeInterface $node, $type)
     {
         return array_reduce(array_filter($this->relations, function (EdgeInterface $edge) use ($node, $type) {
             return $edge->getRelationType() == $type && $edge->getSource()->equals($node);
