@@ -2,6 +2,8 @@
 namespace Owr\App\Controller\Api;
 
 use Owr\App\Controller\PaginationTrait;
+use Owr\Serializer\Context;
+use Owr\Serializer\Serializer;
 use Owr\Service\OrganizationsService;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -16,16 +18,23 @@ class OrganizationsController
     use PaginationTrait;
 
     /**
-     * @var OrganizationsService
+     * @var Serializer
      */
-    private $organizations;
+    private $serializer;
 
     /**
-     * @param OrganizationsService $organizations
+     * @var OrganizationsService
      */
-    public function __construct(OrganizationsService $organizations)
+    private $service;
+
+    /**
+     * @param Serializer $serializer
+     * @param OrganizationsService $service
+     */
+    public function __construct(Serializer $serializer, OrganizationsService $service)
     {
-        $this->organizations = $organizations;
+        $this->service = $service;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -43,7 +52,10 @@ class OrganizationsController
         $page  = $this->getPage($request->getParam('page', 1));
         $count = $this->getCountPerPage($request->getParam('count', 10));
 
-        return $response->withJson($this->organizations->getRelations($name, $page, $count));
+        $relations = $this->service->getRelations($name, $page, $count);
+        $relations = $this->serializer->serialize($relations);
+
+        return $response->withJson($relations);
     }
 
     /**
@@ -60,7 +72,10 @@ class OrganizationsController
         // TODO: add validation for content type
         // TODO: add validation for data structure
         $relations = $request->getParsedBody();
-        $relations = $this->organizations->createRelations($relations);
+
+        $relations = $this->serializer->deserialize($relations);
+        $relations = $this->service->saveRelations($relations);
+        $relations = $this->serializer->serialize($relations, Context::AS_TREE);
 
         return $response->withJson($relations, 201);
     }
@@ -76,6 +91,7 @@ class OrganizationsController
      */
     public function deleteRelationsAction(Request $request, Response $response, $args)
     {
+        $this->service->removeOrganizations();
         return $response->withJson(null, 204);
     }
 }
