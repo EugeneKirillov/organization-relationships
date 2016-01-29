@@ -53,11 +53,12 @@ class WebTestClient
      * @param string $uri
      * @param array $params
      * @param array $server
+     * @param string $content
      *
      * @throws \Slim\Exception\MethodNotAllowedException
      * @throws \Slim\Exception\NotFoundException
      */
-    public function request($method, $uri, array $params = [], array $server = [])
+    public function request($method, $uri, array $params = [], array $server = [], $content = null)
     {
         $method = strtoupper($method);
         switch ($method) {
@@ -76,6 +77,7 @@ class WebTestClient
         }
 
         $server = array_merge($this->server, $server, [
+            'CONTENT_TYPE'   => 'application/json',
             'REQUEST_URI'    => $uri,
             'REQUEST_METHOD' => $method,
             'QUERY_STRING'   => $query,
@@ -84,6 +86,14 @@ class WebTestClient
 
         $request  = Http\Request::createFromEnvironment($env);
         $response = new Http\Response();
+
+        // dirty hack to set body of request :(
+        if (!is_null($content)) {
+            \Closure::bind(function ($request) use ($content) {
+                $request->bodyParsed = $content;
+            }, null, $request)->__invoke($request);
+        }
+
         $response = $this->app->__invoke($request, $response);
 
         $this->request  = $request;

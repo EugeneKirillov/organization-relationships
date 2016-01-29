@@ -7,17 +7,17 @@ class OrganizationsTest extends WebTestCase
 {
     public function testGetRelations()
     {
+        // TODO: use fixtures instead of this POST request
+        $content = json_decode($this->getPayload(), true);
+        $this->client->request('POST', '/api/v1/organizations/relations', [], [], $content);
+
         $params = [
             'page'  => 1,
             'count' => 2,
         ];
-        $this->client->request('GET', '/api/v1/organizations/relations/Jungle Tree', $params);
+        $this->client->request('GET', '/api/v1/organizations/relations/Black Banana', $params);
 
         $expected = array_slice([
-            [
-                "relationship_type"=> "self",
-                "org_name" => "Jungle Tree",
-            ],
             [
                 "relationship_type"=> "parent",
                 "org_name" => "Banana tree",
@@ -48,44 +48,61 @@ class OrganizationsTest extends WebTestCase
 
     public function testCreateRelations()
     {
-        $this->client->request('POST', '/api/v1/organizations/relations');
+        $content = json_decode($this->getPayload(), true);
+        $this->client->request('POST', '/api/v1/organizations/relations', [], [], $content);
 
         $expected = [
+            "org_id"    => 1,
             "org_name"  => "Paradise Island",
             "daughters" => [
                 [
+                    "org_id"    => 2,
                     "org_name"  => "Banana tree",
                     "daughters" => [
                         [
+                            "org_id"   => 3,
                             "org_name" => "Yellow Banana"
                         ],
                         [
+                            "org_id"   => 4,
                             "org_name" => "Brown Banana"
                         ],
                         [
+                            "org_id"    => 5,
                             "org_name"  => "Black Banana",
                             "daughters" => [
-                                ["org_name" => "Phoneutria Spider"],
+                                [
+                                    "org_id"   => 6,
+                                    "org_name" => "Phoneutria Spider"
+                                ],
                             ],
                         ],
                     ],
                 ],
                 [
-                    "org_name" => "Big banana tree",
+                    "org_id"    => 7,
+                    "org_name"  => "Big banana tree",
                     "daughters" => [
                         [
+                            "org_id"   => 3,
                             "org_name" => "Yellow Banana"
                         ],
                         [
+                            "org_id"   => 4,
                             "org_name" => "Brown Banana"
                         ],
                         [
+                            "org_id"   => 8,
                             "org_name" => "Green Banana"
                         ],
                         [
+                            "org_id"    => 5,
                             "org_name"  => "Black Banana",
                             "daughters" => [
-                                ["org_name" => "Phoneutria Spider"],
+                                [
+                                    "org_id"   => 6,
+                                    "org_name" => "Phoneutria Spider"
+                                ],
                             ],
                         ],
                     ],
@@ -101,5 +118,52 @@ class OrganizationsTest extends WebTestCase
 
         $this->assertStatusCode(204);
         $this->assertEquals("null", $this->client->getResponse());
+    }
+
+    protected function getPayload()
+    {
+        return <<<'JSON'
+{
+    "org_name": "Paradise Island",
+    "daughters": [
+        {
+            "org_name": "Banana tree",
+            "daughters": [
+                {
+                    "org_name": "Yellow Banana"
+                },
+                {
+                    "org_name": "Brown Banana"
+                },
+                {
+                    "org_name": "Black Banana",
+                    "daughters": [
+                        {
+                            "org_name": "Phoneutria Spider"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "org_name": "Big banana tree",
+            "daughters": [
+                {
+                    "org_name": "Yellow Banana"
+                },
+                {
+                    "org_name": "Brown Banana"
+                },
+                {
+                    "org_name": "Green Banana"
+                },
+                {
+                    "org_name": "Black Banana"
+                }
+            ]
+        }
+    ]
+}
+JSON;
     }
 }

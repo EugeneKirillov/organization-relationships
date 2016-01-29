@@ -39,7 +39,7 @@ class WebTestCase extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->app = $this->createApplication();
-        //TODO: init database tables
+        $this->setUpDatabase();
         $this->client = $this->createClient();
     }
 
@@ -99,5 +99,19 @@ class WebTestCase extends \PHPUnit_Framework_TestCase
         $expected = json_encode($expected);
         $actual   = $this->client->getResponse();
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Setting up database
+     */
+    protected function setUpDatabase()
+    {
+        /** @var \Doctrine\DBAL\Driver\Connection $db */
+        $db = $this->app->getContainer()['dbal'];
+        $db->beginTransaction();
+        $db->exec('DELETE FROM relations');
+        $db->exec('DELETE FROM organizations');
+        $db->exec('ALTER TABLE organizations AUTO_INCREMENT = 1');
+        $db->commit();
     }
 }
