@@ -2,11 +2,11 @@
 namespace Owr\App;
 
 use Owr\App\Controller\Api\OrganizationsController;
+use Owr\App\Handlers\Error;
 use Owr\App\Provider\DbalServiceProvider;
 use Owr\App\Provider\OrganizationsServiceProvider;
 use Owr\App\Provider\SerializerServiceProvider;
 use Owr\Entity\Organization\Factory;
-use Owr\Entity\Strategy\Md5HashGeneratorStrategy;
 use Slim\App as Application;
 
 /**
@@ -39,6 +39,7 @@ class App extends Application
             ->register(new DbalServiceProvider(), [
                 'db.options' => $container['settings']['db']
             ])
+            ->register(new SerializerServiceProvider())
             ->register(new OrganizationsServiceProvider())
         ;
 
@@ -52,7 +53,13 @@ class App extends Application
      */
     public function registerServices()
     {
-        // TODO: register services that doesn't require initialization
+        $container = $this->getContainer();
+        $container['organizations.factory'] = function ($container) {
+            return new Factory;
+        };
+        $container['errorHandler'] = function ($container) {
+            return new Error();
+        };
         return $this;
     }
 
@@ -63,8 +70,13 @@ class App extends Application
      */
     public function registerControllers()
     {
-        $this->getContainer()['api_relations_controller'] = function ($container) {
-            return new OrganizationsController($container['organizations']);
+        $container = $this->getContainer();
+
+        $container['api_relations_controller'] = function ($container) {
+            return new OrganizationsController(
+                $container['serializer'],
+                $container['organizations']
+            );
         };
 
         return $this;
